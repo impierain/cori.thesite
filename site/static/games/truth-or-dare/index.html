@@ -2,9 +2,20 @@
 <html lang="it">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1, user-scalable=no">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <title>Obbligo o Verità</title>
 <meta name="description" content="Obbligo o Verità con livelli di difficoltà e centinaia di domande.">
+
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="theme-color" content="#1a0b2e">
+
+<!-- iOS Add to Home Screen -->
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Obbligo o Verità">
+<link rel="apple-touch-icon" href="icons/icon-180.png">
+<link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png">
+<link rel="icon" type="image/png" sizes="512x512" href="icons/icon-512.png">
 <style>
   :root{
     --bg-1:#1a0b2e;
@@ -58,7 +69,7 @@
     max-width:520px;
     margin:0 auto;
     min-height:100vh;
-    padding:20px 18px 40px;
+    padding:calc(20px + env(safe-area-inset-top)) calc(18px + env(safe-area-inset-right)) calc(40px + env(safe-area-inset-bottom)) calc(18px + env(safe-area-inset-left));
     display:flex;
     flex-direction:column;
   }
