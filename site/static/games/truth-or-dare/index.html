@@ -1,0 +1,1011 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<title>Obbligo o Verità</title>
+<meta name="description" content="Obbligo o Verità con livelli di difficoltà e centinaia di domande.">
+
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="theme-color" content="#1a0b2e">
+
+<!-- iOS Add to Home Screen -->
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Obbligo o Verità">
+<link rel="apple-touch-icon" href="icons/icon-180.png">
+<link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png">
+<link rel="icon" type="image/png" sizes="512x512" href="icons/icon-512.png">
+<style>
+  :root{
+    --bg-1:#1a0b2e;
+    --bg-2:#3a0e5c;
+    --bg-3:#7b2cbf;
+    --accent:#ff2e93;
+    --accent-2:#00e5ff;
+    --gold:#ffd23f;
+    --card-bg:rgba(255,255,255,0.06);
+    --card-border:rgba(255,255,255,0.16);
+    --text:#fdf6ff;
+    --text-dim:#c8b6dd;
+    --truth-color:#00e5ff;
+    --dare-color:#ff2e93;
+    --radius:22px;
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+  html,body{height:100%;}
+  body{
+    margin:0;
+    min-height:100vh;
+    font-family:'Segoe UI',system-ui,-apple-system,Roboto,sans-serif;
+    color:var(--text);
+    background:
+      radial-gradient(circle at 15% 20%, rgba(255,46,147,0.35), transparent 45%),
+      radial-gradient(circle at 85% 15%, rgba(0,229,255,0.25), transparent 40%),
+      radial-gradient(circle at 50% 90%, rgba(255,210,63,0.18), transparent 45%),
+      linear-gradient(160deg, var(--bg-1), var(--bg-2) 55%, var(--bg-3));
+    background-attachment:fixed;
+    overflow-x:hidden;
+    position:relative;
+  }
+  body::before{
+    content:"";
+    position:fixed;inset:0;
+    background-image:
+      radial-gradient(2px 2px at 20px 30px, rgba(255,255,255,.5), transparent),
+      radial-gradient(2px 2px at 140px 90px, rgba(255,255,255,.35), transparent),
+      radial-gradient(1.5px 1.5px at 90px 160px, rgba(255,255,255,.4), transparent),
+      radial-gradient(2px 2px at 220px 40px, rgba(255,255,255,.3), transparent),
+      radial-gradient(1.5px 1.5px at 260px 200px, rgba(255,255,255,.35), transparent);
+    background-repeat:repeat;
+    background-size:280px 280px;
+    opacity:.5;
+    pointer-events:none;
+    z-index:0;
+  }
+  .app{
+    position:relative;
+    z-index:1;
+    max-width:520px;
+    margin:0 auto;
+    min-height:100vh;
+    padding:calc(20px + env(safe-area-inset-top)) calc(18px + env(safe-area-inset-right)) calc(40px + env(safe-area-inset-bottom)) calc(18px + env(safe-area-inset-left));
+    display:flex;
+    flex-direction:column;
+  }
+  header.top{
+    text-align:center;
+    margin-bottom:18px;
+  }
+  header.top h1{
+    font-size:2.1rem;
+    margin:6px 0 2px;
+    letter-spacing:.5px;
+    background:linear-gradient(90deg, var(--accent), var(--gold), var(--accent-2));
+    -webkit-background-clip:text;
+    background-clip:text;
+    color:transparent;
+    text-shadow:0 4px 30px rgba(255,46,147,.25);
+  }
+  header.top .sub{
+    color:var(--text-dim);
+    font-size:.92rem;
+  }
+  .screen{
+    display:none;
+    flex:1;
+    flex-direction:column;
+    animation:fadeIn .35s ease;
+  }
+  .screen.active{display:flex;}
+  @keyframes fadeIn{
+    from{opacity:0; transform:translateY(10px);}
+    to{opacity:1; transform:translateY(0);}
+  }
+  .card{
+    background:var(--card-bg);
+    border:1px solid var(--card-border);
+    border-radius:var(--radius);
+    padding:20px;
+    backdrop-filter:blur(14px);
+    -webkit-backdrop-filter:blur(14px);
+    box-shadow:0 10px 40px rgba(0,0,0,.35);
+  }
+  /* ---- Players screen ---- */
+  .add-player-row{
+    display:flex;
+    gap:10px;
+    margin-bottom:14px;
+  }
+  input[type=text]{
+    flex:1;
+    padding:14px 16px;
+    border-radius:14px;
+    border:1px solid var(--card-border);
+    background:rgba(255,255,255,.08);
+    color:var(--text);
+    font-size:1rem;
+    outline:none;
+    transition:border-color .2s, box-shadow .2s;
+  }
+  input[type=text]:focus{
+    border-color:var(--accent-2);
+    box-shadow:0 0 0 3px rgba(0,229,255,.2);
+  }
+  button{
+    font-family:inherit;
+    cursor:pointer;
+    border:none;
+  }
+  .btn-add{
+    background:linear-gradient(135deg, var(--accent-2), #00b8d4);
+    color:#04222a;
+    font-weight:700;
+    border-radius:14px;
+    padding:0 20px;
+    font-size:1.3rem;
+    line-height:1;
+  }
+  .player-list{
+    list-style:none;
+    margin:0;
+    padding:0;
+    display:flex;
+    flex-direction:column;
+    gap:10px;
+    max-height:38vh;
+    overflow-y:auto;
+    margin-bottom:16px;
+  }
+  .player-item{
+    display:flex;
+    align-items:center;
+    gap:12px;
+    background:rgba(255,255,255,.05);
+    border:1px solid var(--card-border);
+    border-radius:14px;
+    padding:10px 12px;
+    animation:popIn .25s ease;
+  }
+  @keyframes popIn{
+    from{opacity:0; transform:scale(.85);}
+    to{opacity:1; transform:scale(1);}
+  }
+  .avatar{
+    width:38px;height:38px;
+    border-radius:50%;
+    display:flex;align-items:center;justify-content:center;
+    font-weight:700;
+    color:#1a0b2e;
+    flex-shrink:0;
+    font-size:1rem;
+  }
+  .player-name{flex:1; font-weight:600;}
+  .remove-btn{
+    background:transparent;
+    color:var(--text-dim);
+    font-size:1.2rem;
+    width:30px;height:30px;
+    border-radius:50%;
+  }
+  .remove-btn:hover{background:rgba(255,255,255,.1); color:#ff6b6b;}
+  .empty-hint{
+    text-align:center;
+    color:var(--text-dim);
+    padding:20px 10px;
+    font-size:.9rem;
+  }
+  .primary-btn{
+    width:100%;
+    padding:16px;
+    border-radius:16px;
+    font-size:1.1rem;
+    font-weight:700;
+    color:#1a0b2e;
+    background:linear-gradient(135deg, var(--gold), #ff8a3d);
+    box-shadow:0 8px 24px rgba(255,140,60,.35);
+    transition:transform .15s;
+  }
+  .primary-btn:active{transform:scale(.97);}
+  .primary-btn:disabled{
+    opacity:.4;
+    box-shadow:none;
+    cursor:not-allowed;
+  }
+  .ghost-btn{
+    width:100%;
+    padding:14px;
+    border-radius:16px;
+    font-size:1rem;
+    font-weight:600;
+    color:var(--text);
+    background:rgba(255,255,255,.06);
+    border:1px solid var(--card-border);
+    margin-top:10px;
+  }
+  /* ---- Levels screen ---- */
+  .levels-grid{
+    display:flex;
+    flex-direction:column;
+    gap:12px;
+    margin-bottom:18px;
+  }
+  .level-card{
+    position:relative;
+    border-radius:18px;
+    padding:16px 18px;
+    border:2px solid var(--card-border);
+    background:rgba(255,255,255,.05);
+    display:flex;
+    align-items:center;
+    gap:14px;
+    cursor:pointer;
+    transition:all .2s;
+  }
+  .level-card .emoji{font-size:1.8rem;}
+  .level-card .info{flex:1;}
+  .level-card .info .name{font-weight:700; font-size:1.05rem;}
+  .level-card .info .desc{font-size:.82rem; color:var(--text-dim); margin-top:2px;}
+  .level-card .check{
+    width:24px;height:24px;
+    border-radius:7px;
+    border:2px solid var(--text-dim);
+    display:flex;align-items:center;justify-content:center;
+    font-size:.9rem;
+    flex-shrink:0;
+  }
+  .level-card.selected{
+    border-color:var(--accent);
+    background:rgba(255,46,147,.12);
+    box-shadow:0 0 0 3px rgba(255,46,147,.15);
+  }
+  .level-card.selected .check{
+    background:var(--accent);
+    border-color:var(--accent);
+    color:#fff;
+  }
+  .level-card[data-level="soft"].selected{border-color:#5ee6a0; box-shadow:0 0 0 3px rgba(94,230,160,.18);}
+  .level-card[data-level="soft"].selected .check{background:#5ee6a0; border-color:#5ee6a0;}
+  .level-card[data-level="piccante"].selected{border-color:var(--gold); box-shadow:0 0 0 3px rgba(255,210,63,.18);}
+  .level-card[data-level="piccante"].selected .check{background:var(--gold); border-color:var(--gold);}
+  .level-card[data-level="hot"].selected{border-color:#ff6b3d; box-shadow:0 0 0 3px rgba(255,107,61,.18);}
+  .level-card[data-level="hot"].selected .check{background:#ff6b3d; border-color:#ff6b3d;}
+  .level-card[data-level="estremo"].selected{border-color:#ff2e6d; box-shadow:0 0 0 3px rgba(255,46,109,.18);}
+  .level-card[data-level="estremo"].selected .check{background:#ff2e6d; border-color:#ff2e6d;}
+
+  /* ---- Game screen ---- */
+  .turn-banner{
+    text-align:center;
+    margin-bottom:16px;
+  }
+  .turn-banner .label{color:var(--text-dim); font-size:.85rem; text-transform:uppercase; letter-spacing:1.5px;}
+  .turn-banner .player-name-big{
+    display:inline-flex;
+    align-items:center;
+    gap:10px;
+    font-size:1.6rem;
+    font-weight:800;
+    margin-top:4px;
+  }
+  .turn-banner .avatar{width:46px;height:46px; font-size:1.2rem;}
+
+  .stage{
+    flex:1;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    perspective:1400px;
+    min-height:280px;
+  }
+  .flip-card{
+    width:100%;
+    max-width:380px;
+    height:280px;
+    position:relative;
+    transform-style:preserve-3d;
+    transition:transform .6s cubic-bezier(.4,.2,.2,1);
+  }
+  .flip-card.flipped{transform:rotateY(180deg);}
+  .face{
+    position:absolute;
+    inset:0;
+    border-radius:24px;
+    backface-visibility:hidden;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    text-align:center;
+    padding:28px;
+    border:1px solid var(--card-border);
+  }
+  .face-front{
+    background:linear-gradient(145deg, rgba(255,255,255,.1), rgba(255,255,255,.03));
+    box-shadow:0 15px 40px rgba(0,0,0,.4);
+  }
+  .face-front .big-icon{font-size:3.4rem; margin-bottom:10px;}
+  .face-front .hint{color:var(--text-dim); font-size:.95rem;}
+  .face-back{
+    transform:rotateY(180deg);
+    box-shadow:0 15px 40px rgba(0,0,0,.5);
+  }
+  .face-back.truth{background:linear-gradient(150deg, #0891b2, #0e4a6b);}
+  .face-back.dare{background:linear-gradient(150deg, #d6247a, #6b1450);}
+  .face-back .tag{
+    font-size:.75rem;
+    text-transform:uppercase;
+    letter-spacing:2px;
+    opacity:.85;
+    margin-bottom:10px;
+    font-weight:700;
+  }
+  .face-back .question-text{
+    font-size:1.25rem;
+    font-weight:600;
+    line-height:1.4;
+  }
+  .face-back .level-chip{
+    margin-top:14px;
+    font-size:.75rem;
+    padding:4px 10px;
+    border-radius:20px;
+    background:rgba(255,255,255,.15);
+  }
+
+  .choice-row{
+    display:flex;
+    gap:14px;
+    margin-top:24px;
+    width:100%;
+    max-width:380px;
+  }
+  .choice-btn{
+    flex:1;
+    padding:18px 10px;
+    border-radius:18px;
+    font-size:1.1rem;
+    font-weight:800;
+    color:#fff;
+    letter-spacing:.5px;
+    transition:transform .15s, filter .15s;
+  }
+  .choice-btn:active{transform:scale(.95);}
+  .choice-btn.truth{background:linear-gradient(135deg, #00e5ff, #0891b2); box-shadow:0 8px 20px rgba(0,229,255,.3);}
+  .choice-btn.dare{background:linear-gradient(135deg, #ff2e93, #b3186a); box-shadow:0 8px 20px rgba(255,46,147,.3);}
+  .choice-btn:disabled{opacity:.35; cursor:not-allowed;}
+
+  .next-row{
+    margin-top:18px;
+    width:100%;
+    max-width:380px;
+  }
+
+  .footer-nav{
+    display:flex;
+    justify-content:center;
+    gap:18px;
+    margin-top:22px;
+    font-size:.82rem;
+  }
+  .footer-nav a{
+    color:var(--text-dim);
+    text-decoration:none;
+    cursor:pointer;
+    border-bottom:1px dotted var(--text-dim);
+  }
+  .footer-nav a:hover{color:var(--text);}
+
+  .progress-dots{
+    display:flex;
+    justify-content:center;
+    gap:6px;
+    margin-top:14px;
+    flex-wrap:wrap;
+  }
+  .progress-dots .dot{
+    width:9px;height:9px;border-radius:50%;
+    background:rgba(255,255,255,.18);
+    transition:background .2s, transform .2s;
+  }
+  .progress-dots .dot.current{
+    background:var(--gold);
+    transform:scale(1.3);
+  }
+  .progress-dots .dot.done{background:rgba(255,255,255,.4);}
+
+  ::-webkit-scrollbar{width:8px;}
+  ::-webkit-scrollbar-thumb{background:rgba(255,255,255,.2); border-radius:10px;}
+
+  .toast{
+    position:fixed;
+    bottom:24px;
+    left:50%;
+    transform:translateX(-50%) translateY(20px);
+    background:rgba(20,10,30,.95);
+    border:1px solid var(--card-border);
+    padding:12px 20px;
+    border-radius:14px;
+    font-size:.9rem;
+    opacity:0;
+    pointer-events:none;
+    transition:all .3s;
+    z-index:50;
+    max-width:90%;
+    text-align:center;
+  }
+  .toast.show{opacity:1; transform:translateX(-50%) translateY(0);}
+</style>
+</head>
+<body>
+<div class="app">
+  <header class="top">
+    <h1>🔥 Obbligo o Verità</h1>
+    <div class="sub">Scegli i giocatori, il livello... e osa.</div>
+  </header>
+
+  <!-- SCREEN 1: PLAYERS -->
+  <section class="screen active" id="screen-players">
+    <div class="card">
+      <div class="add-player-row">
+        <input type="text" id="player-input" placeholder="Nome giocatore" maxlength="16">
+        <button class="btn-add" id="btn-add-player">+</button>
+      </div>
+      <ul class="player-list" id="player-list"></ul>
+      <div class="empty-hint" id="empty-hint">Aggiungi almeno 2 giocatori per iniziare 👇</div>
+    </div>
+    <button class="primary-btn" id="btn-go-levels" style="margin-top:16px;" disabled>Continua →</button>
+  </section>
+
+  <!-- SCREEN 2: LEVELS -->
+  <section class="screen" id="screen-levels">
+    <div class="card">
+      <div class="levels-grid" id="levels-grid"></div>
+      <div style="color:var(--text-dim); font-size:.82rem; text-align:center;">Puoi selezionare più livelli insieme</div>
+    </div>
+    <button class="primary-btn" id="btn-start-game" style="margin-top:16px;" disabled>Inizia a giocare 🎲</button>
+    <button class="ghost-btn" id="btn-back-players">← Torna ai giocatori</button>
+  </section>
+
+  <!-- SCREEN 3: GAME -->
+  <section class="screen" id="screen-game">
+    <div class="turn-banner">
+      <div class="label">Tocca a</div>
+      <div class="player-name-big">
+        <span class="avatar" id="turn-avatar"></span>
+        <span id="turn-name"></span>
+      </div>
+    </div>
+
+    <div class="stage">
+      <div class="flip-card" id="flip-card">
+        <div class="face face-front">
+          <div class="big-icon">🎲</div>
+          <div class="hint">Scegli Verità o Obbligo</div>
+        </div>
+        <div class="face face-back" id="face-back">
+          <div class="tag" id="q-tag">Verità</div>
+          <div class="question-text" id="q-text"></div>
+          <div class="level-chip" id="q-level"></div>
+        </div>
+      </div>
+
+      <div class="choice-row" id="choice-row">
+        <button class="choice-btn truth" id="btn-truth">💬 Verità</button>
+        <button class="choice-btn dare" id="btn-dare">⚡ Obbligo</button>
+      </div>
+
+      <div class="next-row" id="next-row" style="display:none;">
+        <button class="primary-btn" id="btn-next">Turno successivo →</button>
+      </div>
+    </div>
+
+    <div class="progress-dots" id="progress-dots"></div>
+
+    <div class="footer-nav">
+      <a id="link-levels">Cambia livello</a>
+      <a id="link-players">Cambia giocatori</a>
+      <a id="link-restart">Ricomincia</a>
+    </div>
+  </section>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+(function(){
+  "use strict";
+
+  /* ============ QUESTION DATABASE ============ */
+  var DB = {
+    soft: {
+      emoji: "🌱", name: "Soft", desc: "Leggero e divertente, perfetto per rompere il ghiaccio",
+      truth: [
+        "Qual è il tuo ricordo d'infanzia preferito?",
+        "Qual è la cosa più imbarazzante che ti sia mai successa a scuola?",
+        "Se potessi avere una qualità di un'altra persona nella stanza, quale sceglieresti?",
+        "Qual è il tuo film preferito di sempre e perché?",
+        "Qual è la bugia più innocente che hai mai detto ai tuoi genitori?",
+        "Qual è il tuo peggior incubo ricorrente?",
+        "Se potessi vivere in un'altra epoca storica, quale sceglieresti?",
+        "Qual è la canzone che ti fa sempre venire voglia di ballare?",
+        "Qual è il soprannome più strano che ti hanno mai dato?",
+        "Qual è il tuo piatto preferito in assoluto?",
+        "Cosa ti fa ridere anche quando non dovresti?",
+        "Qual è il tuo superpotere ideale?",
+        "Se potessi cambiare una cosa di te stesso, cosa cambieresti?",
+        "Qual è la cosa più strana che hai in tasca o in borsa in questo momento?",
+        "Qual è la tua paura più irrazionale?",
+        "Chi è la persona che ammiri di più e perché?",
+        "Qual è il regalo più bello che tu abbia mai ricevuto?",
+        "Se vincessi alla lotteria, la prima cosa che compreresti?",
+        "Qual è il tuo animale preferito e perché?",
+        "Qual è il posto più bello che hai visitato?",
+        "Quale materia scolastica odiavi di più?",
+        "Qual è la cosa più folle che hai fatto per amicizia?",
+        "Preferisci le montagne o il mare? Perché?",
+        "Qual è la tua serie TV preferita del momento?",
+        "Se potessi cenare con un personaggio famoso, chi sceglieresti?",
+        "Qual è il tuo hobby segreto che pochi conoscono?",
+        "Qual è stata la tua prima cotta?",
+        "Qual è il complimento più bello che ti hanno mai fatto?",
+        "Cosa ti rende davvero felice in una giornata no?",
+        "Qual è il tuo ricordo più bello con le persone qui presenti?"
+      ],
+      dare: [
+        "Fai il verso al tuo animale preferito per 10 secondi.",
+        "Canta il ritornello della prima canzone che ti viene in mente.",
+        "Balla senza musica per 20 secondi davanti a tutti.",
+        "Racconta una barzelletta e fai ridere almeno una persona.",
+        "Parla con accento straniero per i prossimi 2 turni.",
+        "Fai 10 flessioni o squat davanti al gruppo.",
+        "Imita il modo di camminare di un giocatore a scelta.",
+        "Lascia che qualcuno ti pettini in modo ridicolo per un minuto.",
+        "Fai una foto buffa e mostrala a tutti (o mandala nel gruppo).",
+        "Recita una filastrocca imparata da bambino.",
+        "Prova a toccarti il naso con la lingua.",
+        "Fai una faccia buffa e mantienila per 15 secondi.",
+        "Racconta il tuo sogno più strano.",
+        "Fai finta di essere un presentatore TV per 30 secondi.",
+        "Indossa un vestito al contrario per i prossimi 3 turni.",
+        "Fai un selfie con l'espressione più assurda possibile.",
+        "Parla solo in rima per il prossimo turno.",
+        "Fai finta di essere un robot per 20 secondi.",
+        "Racconta la trama di un film mimandola senza parlare.",
+        "Lascia che il gruppo scelga il tuo prossimo stato social.",
+        "Fai una imitazione di un insegnante che hai avuto.",
+        "Cammina per la stanza come se stessi pattinando.",
+        "Canta 'tanti auguri' a un oggetto a caso nella stanza.",
+        "Fai finta di essere un gatto per 15 secondi.",
+        "Racconta una storia di 30 secondi usando solo parole che iniziano con la stessa lettera.",
+        "Fai un disegno veloce di un giocatore e mostralo a tutti.",
+        "Prova a fischiare una canzone e fai indovinare quale sia.",
+        "Fai una dedica improvvisata a un membro del gruppo.",
+        "Balla il tuo ballo preferito per 15 secondi.",
+        "Fai finta di intervistare un giocatore come fosse una celebrità."
+      ]
+    },
+    piccante: {
+      emoji: "🌶️", name: "Piccante", desc: "Domande curiose e sfide un po' più audaci",
+      truth: [
+        "Qual è stato il tuo appuntamento più imbarazzante?",
+        "Hai mai avuto una cotta per l'amico/a di un amico/a?",
+        "Qual è la cosa più folle che hai fatto per attirare l'attenzione di qualcuno?",
+        "Hai mai mandato un messaggio alla persona sbagliata? Cosa diceva?",
+        "Qual è il tuo più grande rimpianto in amore?",
+        "Hai mai finto di stare bene mentre in realtà stavi malissimo?",
+        "Qual è la bugia più grande che hai mai detto a un partner?",
+        "Chi, tra i presenti, sposeresti se dovessi scegliere subito?",
+        "Hai mai baciato qualcuno solo per gioco o scommessa?",
+        "Qual è il tuo più grande difetto secondo i tuoi ex?",
+        "Hai mai fatto ghosting a qualcuno? Perché?",
+        "Qual è la cosa più imbarazzante trovata nel telefono di qualcuno?",
+        "Hai mai provato gelosia per un amico/a del tuo partner?",
+        "Qual è il segreto più strano che custodisci?",
+        "Hai mai fatto finta di conoscere qualcuno per evitare imbarazzo?",
+        "Qual è la cosa più stupida per cui hai litigato con qualcuno?",
+        "Hai mai copiato a un esame o mentito su un voto?",
+        "Qual è la persona più famosa con cui vorresti uscire?",
+        "Hai mai stalkerato i social di un ex o di una cotta?",
+        "Qual è il tuo più grande imbarazzo in pubblico?",
+        "Hai mai finto un malore per evitare un impegno?",
+        "Qual è la cosa più cara che hai comprato d'impulso?",
+        "Hai mai tradito la fiducia di un amico raccontando un suo segreto?",
+        "Qual è il complimento più strano che ti hanno mai fatto?",
+        "Hai mai avuto una crush per un/a insegnante o professore/prof?",
+        "Qual è la scusa più assurda che hai usato per non uscire?",
+        "Hai mai fatto qualcosa di cui ti vergogni ancora oggi?",
+        "Chi, tra i presenti, ti farebbe più tenerezza da vedere in imbarazzo?",
+        "Qual è il pettegolezzo più assurdo che hai sentito su te stesso?",
+        "Hai mai finto di piacerti qualcosa solo per fare colpo su qualcuno?"
+      ],
+      dare: [
+        "Manda un messaggio con un'emoji a caso alla quinta persona nella tua lista contatti.",
+        "Lascia che qualcuno scriva uno stato sul tuo profilo social per un minuto.",
+        "Fai un complimento sincero a ciascun giocatore.",
+        "Scambia un capo di abbigliamento con un altro giocatore per il resto del gioco.",
+        "Fai finta di flirtare con un oggetto della stanza per 20 secondi.",
+        "Racconta il tuo primo bacio nei minimi dettagli.",
+        "Lascia che il gruppo guardi le ultime 5 foto nella tua galleria.",
+        "Chiama o scrivi a qualcuno dicendo solo 'mi mancavi' senza altre spiegazioni.",
+        "Fai un balletto sensuale di 15 secondi.",
+        "Lascia che un giocatore ti trucchi o ti sistemi i capelli come vuole.",
+        "Racconta la storia dietro il tuo ultimo messaggio inviato.",
+        "Fai una dichiarazione d'amore esagerata a un oggetto nella stanza.",
+        "Rispondi a tutte le domande per il prossimo turno con voce sensuale.",
+        "Mostra l'ultima foto scattata nel tuo telefono, qualsiasi essa sia.",
+        "Fai un massaggio alle spalle di 30 secondi al giocatore alla tua destra.",
+        "Racconta il nome della persona che ti piaceva alle medie.",
+        "Fai finta di essere in un provino per un film romantico per 20 secondi.",
+        "Lascia che qualcuno legga ad alta voce l'ultima conversazione WhatsApp (se appropriata).",
+        "Fai un complimento imbarazzante a te stesso guardandoti allo specchio (o alla telecamera).",
+        "Racconta qual è stato il regalo più originale che hai fatto a una cotta.",
+        "Fingi una telefonata romantica per 20 secondi.",
+        "Mima la tua prima cotta senza dire il nome, fai indovinare al gruppo.",
+        "Scrivi una piccola poesia improvvisata dedicata a un giocatore.",
+        "Fai vedere l'ultima chat che hai avuto con un ex o una crush (censurando se serve).",
+        "Racconta il posto più strano in cui hai baciato qualcuno."
+      ]
+    },
+    hot: {
+      emoji: "🔥", name: "Hot", desc: "Per gruppi affiatati, più diretto e provocatorio",
+      truth: [
+        "Qual è la parte del corpo che trovi più attraente in una persona?",
+        "Qual è il tuo tipo ideale, fisicamente e caratterialmente?",
+        "Hai mai avuto un'esperienza a tre... di conversazione imbarazzante? Racconta.",
+        "Qual è la cosa più audace che hai mai fatto per sedurre qualcuno?",
+        "Qual è il posto più insolito in cui vorresti fare un appuntamento romantico?",
+        "Descrivi il bacio perfetto secondo te.",
+        "Hai mai avuto una relazione segreta? Racconta (senza fare nomi se preferisci).",
+        "Qual è il complimento fisico che ti piace ricevere di più?",
+        "Chi tra i presenti inviteresti a un appuntamento se fossi single?",
+        "Qual è la fantasia romantica che vorresti realizzare?",
+        "Hai mai flirtato con più persone contemporaneamente?",
+        "Qual è la cosa più piccante che hai scritto in un messaggio?",
+        "Qual è il tuo più grande turn-off in assoluto?",
+        "Hai mai baciato due persone nella stessa serata?",
+        "Qual è la cosa che ti fa perdere la testa in un flirt?",
+        "Racconta l'appuntamento più hot che tu abbia mai avuto.",
+        "Qual è il tuo linguaggio dell'amore preferito (parole, gesti, contatto...)?",
+        "Hai mai avuto una relazione a distanza? Come è andata?",
+        "Qual è la cosa più audace che vorresti provare in una relazione?",
+        "Chi, tra i presenti, ha lo sguardo più intenso secondo te?",
+        "Qual è il momento più romantico che hai vissuto?",
+        "Hai mai baciato qualcuno il primo giorno che l'hai conosciuto?",
+        "Qual è la citazione o frase più cheesy che hai mai usato per rimorchiare?",
+        "Racconta il complimento più diretto che tu abbia mai ricevuto.",
+        "Qual è il tuo limite quando si tratta di flirtare con l'amico/a di un amico?"
+      ],
+      dare: [
+        "Fai un lento sguardo intenso al giocatore alla tua sinistra per 10 secondi.",
+        "Sussurra una frase da film romantico all'orecchio del giocatore accanto a te.",
+        "Fai un ballo lento e sensuale per 15 secondi.",
+        "Lascia che il gruppo scelga chi deve farti un complimento hot.",
+        "Racconta a voce alta l'ultimo pensiero 'poco casto' che hai avuto.",
+        "Fai un massaggio al collo di 20 secondi al giocatore alla tua destra.",
+        "Manda un messaggio audace (ma rispettoso) a una crush o partner.",
+        "Fingi di essere in un appuntamento al buio e presentati in modo seducente.",
+        "Descrivi con parole il giocatore più attraente del gruppo senza dire chi è, fai indovinare.",
+        "Fai un abbraccio di 15 secondi al giocatore che preferisci nel gruppo.",
+        "Recita una scena romantica improvvisata con un altro giocatore.",
+        "Lascia che qualcuno ti scelga la prossima foto profilo (con approvazione finale tua).",
+        "Fai un complimento seducente a ogni giocatore del sesso che ti attrae.",
+        "Racconta la fantasia di un appuntamento perfetto nei minimi dettagli.",
+        "Fai finta di sedurre un oggetto della stanza come se fosse una persona reale.",
+        "Tieni per un minuto lo sguardo fisso negli occhi del giocatore che preferisci senza ridere.",
+        "Fai una dedica hot (ma elegante) a un giocatore a scelta.",
+        "Mostra come baceresti qualcuno sulla mano, dimostrando su un giocatore consenziente.",
+        "Racconta il momento più sexy che ricordi della tua vita.",
+        "Fai indovinare al gruppo, mimando, la tua posizione preferita per dormire abbracciati."
+      ]
+    },
+    estremo: {
+      emoji: "💀", name: "Estremo", desc: "Solo per i più coraggiosi, nessun limite (nel rispetto altrui)",
+      truth: [
+        "Qual è il segreto più oscuro che non hai mai raccontato a nessuno?",
+        "Hai mai tradito qualcuno? Racconta cosa è successo.",
+        "Qual è la cosa più illegale (piccola) che tu abbia mai fatto?",
+        "Chi, tra le persone presenti, spoglieresti con lo sguardo senza pensarci due volte?",
+        "Qual è la verità più scomoda che hai nascosto a un amico?",
+        "Hai mai fatto qualcosa di cui i tuoi genitori non sanno nulla e sarebbero furiosi?",
+        "Qual è la cosa peggiore che hai fatto per gelosia?",
+        "Hai mai desiderato qualcuno che era già impegnato?",
+        "Qual è il rimpianto più grande della tua vita amorosa?",
+        "Racconta l'esperienza più imbarazzante mai vissuta in intimità.",
+        "Hai mai mentito su qualcosa di importante a tutto il gruppo qui presente?",
+        "Qual è la cosa più spudorata che hai mai fatto per ottenere ciò che volevi?",
+        "Se potessi confessare una cosa a una persona in questa stanza, cosa le diresti?",
+        "Hai mai provato attrazione per l'ex di un amico?",
+        "Qual è la cosa più vergognosa mai scoperta sul tuo telefono da qualcun altro?",
+        "Racconta la volta in cui hai ferito qualcuno che amavi, anche senza volerlo.",
+        "Hai mai fatto un torto a qualcuno del gruppo e non gliel'hai mai detto?",
+        "Qual è la verità che avresti più paura venisse rivelata qui stasera?",
+        "Chi, tra i presenti, pensi conosca meno di quanto dice di conoscerti?",
+        "Qual è la cosa più rischiosa che hai fatto per amore o passione?"
+      ],
+      dare: [
+        "Lascia che il gruppo legga l'ultimo messaggio che hai inviato, qualsiasi esso sia.",
+        "Chiama la quinta persona in rubrica e canta 'tanti auguri' anche se non è il suo compleanno.",
+        "Lascia che un giocatore posti qualcosa a scelta sul tuo stato social per 10 minuti.",
+        "Racconta in diretta un segreto imbarazzante mentre tutti ti fissano senza ridere.",
+        "Fai una videochiamata a un ex e chiedi come sta (se ti senti a tuo agio, altrimenti scegli un'altra sfida).",
+        "Lascia che il gruppo scriva un messaggio a nome tuo a una persona a scelta (approvato da te prima dell'invio).",
+        "Confessa ad alta voce la cosa più imbarazzante che hai fatto quest'anno.",
+        "Fai indossare al giocatore alla tua destra un vestito ridicolo per il resto della serata.",
+        "Lascia che il gruppo guardi le tue ultime ricerche su internet (se sei a tuo agio).",
+        "Racconta la bugia più grande che hai mai detto a tutto il gruppo qui presente.",
+        "Fai un giuramento solenne e ridicolo davanti a tutti, inventato sul momento.",
+        "Lascia che ti venga assegnato un soprannome imbarazzante da usare per il resto della serata.",
+        "Racconta la cosa più folle che faresti se non avessi paura del giudizio altrui.",
+        "Fai una sfida a duello di sguardi con un altro giocatore: chi ride prima perde e deve fare una penitenza extra.",
+        "Rivela chi, secondo te, tra i presenti nasconde di più il proprio vero carattere.",
+        "Lascia che il gruppo decida la tua prossima sfida senza sapere di cosa si tratta."
+      ]
+    }
+  };
+
+  var LEVEL_ORDER = ["soft", "piccante", "hot", "estremo"];
+
+  /* ============ STATE ============ */
+  var state = {
+    players: [],
+    selectedLevels: [],
+    currentIndex: 0,
+    usedTruth: {},
+    usedDare: {}
+  };
+
+  var AVATAR_COLORS = ["#ff2e93","#00e5ff","#ffd23f","#5ee6a0","#ff8a3d","#c77dff","#ff6b6b","#4ea8de"];
+
+  function loadPlayers(){
+    try{
+      var saved = JSON.parse(localStorage.getItem("od_players") || "[]");
+      if(Array.isArray(saved)) state.players = saved;
+    }catch(e){ state.players = []; }
+  }
+  function savePlayers(){
+    localStorage.setItem("od_players", JSON.stringify(state.players));
+  }
+
+  /* ============ TOAST ============ */
+  var toastEl = document.getElementById("toast");
+  var toastTimer;
+  function toast(msg){
+    toastEl.textContent = msg;
+    toastEl.classList.add("show");
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(function(){ toastEl.classList.remove("show"); }, 1800);
+  }
+
+  /* ============ SCREENS ============ */
+  var screens = {
+    players: document.getElementById("screen-players"),
+    levels: document.getElementById("screen-levels"),
+    game: document.getElementById("screen-game")
+  };
+  function showScreen(name){
+    Object.keys(screens).forEach(function(k){
+      screens[k].classList.toggle("active", k === name);
+    });
+  }
+
+  /* ============ PLAYERS SCREEN ============ */
+  var playerInput = document.getElementById("player-input");
+  var playerListEl = document.getElementById("player-list");
+  var emptyHint = document.getElementById("empty-hint");
+  var btnAddPlayer = document.getElementById("btn-add-player");
+  var btnGoLevels = document.getElementById("btn-go-levels");
+
+  function renderPlayers(){
+    playerListEl.innerHTML = "";
+    if(state.players.length === 0){
+      emptyHint.style.display = "block";
+    } else {
+      emptyHint.style.display = "none";
+    }
+    state.players.forEach(function(p, i){
+      var li = document.createElement("li");
+      li.className = "player-item";
+      var initials = p.name.trim().slice(0,2).toUpperCase();
+      li.innerHTML =
+        '<span class="avatar" style="background:' + p.color + '">' + initials + '</span>' +
+        '<span class="player-name"></span>' +
+        '<button class="remove-btn" data-i="' + i + '">✕</button>';
+      li.querySelector(".player-name").textContent = p.name;
+      playerListEl.appendChild(li);
+    });
+    btnGoLevels.disabled = state.players.length < 2;
+  }
+
+  function addPlayer(){
+    var name = playerInput.value.trim();
+    if(!name) return;
+    if(name.length > 16) name = name.slice(0,16);
+    var color = AVATAR_COLORS[state.players.length % AVATAR_COLORS.length];
+    state.players.push({ name: name, color: color });
+    playerInput.value = "";
+    savePlayers();
+    renderPlayers();
+    playerInput.focus();
+  }
+
+  btnAddPlayer.addEventListener("click", addPlayer);
+  playerInput.addEventListener("keydown", function(e){
+    if(e.key === "Enter") addPlayer();
+  });
+  playerListEl.addEventListener("click", function(e){
+    var btn = e.target.closest(".remove-btn");
+    if(!btn) return;
+    var i = parseInt(btn.getAttribute("data-i"), 10);
+    state.players.splice(i, 1);
+    savePlayers();
+    renderPlayers();
+  });
+
+  btnGoLevels.addEventListener("click", function(){
+    if(state.players.length < 2){
+      toast("Aggiungi almeno 2 giocatori!");
+      return;
+    }
+    showScreen("levels");
+  });
+
+  /* ============ LEVELS SCREEN ============ */
+  var levelsGrid = document.getElementById("levels-grid");
+  var btnStartGame = document.getElementById("btn-start-game");
+  var btnBackPlayers = document.getElementById("btn-back-players");
+
+  function renderLevels(){
+    levelsGrid.innerHTML = "";
+    LEVEL_ORDER.forEach(function(key){
+      var lvl = DB[key];
+      var div = document.createElement("div");
+      div.className = "level-card" + (state.selectedLevels.indexOf(key) >= 0 ? " selected" : "");
+      div.setAttribute("data-level", key);
+      div.innerHTML =
+        '<span class="emoji">' + lvl.emoji + '</span>' +
+        '<span class="info"><span class="name">' + lvl.name + '</span>' +
+        '<span class="desc">' + lvl.desc + '</span></span>' +
+        '<span class="check">✓</span>';
+      levelsGrid.appendChild(div);
+    });
+  }
+
+  levelsGrid.addEventListener("click", function(e){
+    var card = e.target.closest(".level-card");
+    if(!card) return;
+    var key = card.getAttribute("data-level");
+    var idx = state.selectedLevels.indexOf(key);
+    if(idx >= 0) state.selectedLevels.splice(idx, 1);
+    else state.selectedLevels.push(key);
+    renderLevels();
+    btnStartGame.disabled = state.selectedLevels.length === 0;
+  });
+
+  btnBackPlayers.addEventListener("click", function(){ showScreen("players"); });
+
+  btnStartGame.addEventListener("click", function(){
+    if(state.selectedLevels.length === 0){
+      toast("Scegli almeno un livello!");
+      return;
+    }
+    startGame();
+  });
+
+  /* ============ GAME SCREEN ============ */
+  var turnAvatar = document.getElementById("turn-avatar");
+  var turnName = document.getElementById("turn-name");
+  var flipCard = document.getElementById("flip-card");
+  var faceBack = document.getElementById("face-back");
+  var qTag = document.getElementById("q-tag");
+  var qText = document.getElementById("q-text");
+  var qLevel = document.getElementById("q-level");
+  var choiceRow = document.getElementById("choice-row");
+  var btnTruth = document.getElementById("btn-truth");
+  var btnDare = document.getElementById("btn-dare");
+  var nextRow = document.getElementById("next-row");
+  var btnNext = document.getElementById("btn-next");
+  var progressDots = document.getElementById("progress-dots");
+
+  function startGame(){
+    state.currentIndex = 0;
+    state.usedTruth = {};
+    state.usedDare = {};
+    state.selectedLevels.forEach(function(l){
+      state.usedTruth[l] = [];
+      state.usedDare[l] = [];
+    });
+    showScreen("game");
+    renderTurn();
+  }
+
+  function renderDots(){
+    progressDots.innerHTML = "";
+    state.players.forEach(function(p, i){
+      var dot = document.createElement("span");
+      dot.className = "dot" + (i === state.currentIndex ? " current" : (i < state.currentIndex ? " done" : ""));
+      progressDots.appendChild(dot);
+    });
+  }
+
+  function renderTurn(){
+    var p = state.players[state.currentIndex];
+    turnAvatar.style.background = p.color;
+    turnAvatar.textContent = p.name.trim().slice(0,2).toUpperCase();
+    turnName.textContent = p.name;
+    flipCard.classList.remove("flipped");
+    choiceRow.style.display = "flex";
+    nextRow.style.display = "none";
+    btnTruth.disabled = false;
+    btnDare.disabled = false;
+    renderDots();
+  }
+
+  function pickQuestion(type){
+    // type: 'truth' | 'dare'
+    var pool = [];
+    state.selectedLevels.forEach(function(l){
+      DB[l][type].forEach(function(q, i){
+        pool.push({ level: l, text: q, key: l + "_" + type + "_" + i });
+      });
+    });
+    var usedKeys = [];
+    state.selectedLevels.forEach(function(l){
+      (type === "truth" ? state.usedTruth[l] : state.usedDare[l]).forEach(function(k){
+        usedKeys.push(k);
+      });
+    });
+    var available = pool.filter(function(item){ return usedKeys.indexOf(item.key) < 0; });
+    if(available.length === 0){
+      // reset pool for chosen type across selected levels
+      state.selectedLevels.forEach(function(l){
+        if(type === "truth") state.usedTruth[l] = [];
+        else state.usedDare[l] = [];
+      });
+      available = pool;
+    }
+    var chosen = available[Math.floor(Math.random() * available.length)];
+    if(type === "truth") state.usedTruth[chosen.level].push(chosen.key);
+    else state.usedDare[chosen.level].push(chosen.key);
+    return chosen;
+  }
+
+  function revealQuestion(type){
+    var chosen = pickQuestion(type);
+    qTag.textContent = type === "truth" ? "💬 Verità" : "⚡ Obbligo";
+    faceBack.className = "face face-back " + type;
+    qText.textContent = chosen.text;
+    qLevel.textContent = DB[chosen.level].emoji + " " + DB[chosen.level].name;
+    flipCard.classList.add("flipped");
+    choiceRow.style.display = "none";
+    nextRow.style.display = "block";
+  }
+
+  btnTruth.addEventListener("click", function(){ revealQuestion("truth"); });
+  btnDare.addEventListener("click", function(){ revealQuestion("dare"); });
+
+  btnNext.addEventListener("click", function(){
+    state.currentIndex = (state.currentIndex + 1) % state.players.length;
+    renderTurn();
+  });
+
+  document.getElementById("link-levels").addEventListener("click", function(){
+    showScreen("levels");
+  });
+  document.getElementById("link-players").addEventListener("click", function(){
+    showScreen("players");
+  });
+  document.getElementById("link-restart").addEventListener("click", function(){
+    if(confirm("Vuoi ricominciare la partita dal primo giocatore?")){
+      startGame();
+    }
+  });
+
+  /* ============ INIT ============ */
+  loadPlayers();
+  renderPlayers();
+  renderLevels();
+})();
+</script>
+</body>
+</html>
