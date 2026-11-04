@@ -40,11 +40,18 @@ Per i soci: crea l'utente con la stessa email della scheda (non serve altro).
 
 ## Lettura automatica del modulo di adesione
 
-`src/lib/pdfParse.ts` legge i **campi compilabili** del PDF oppure cerca nel testo le etichette
-(Cognome, Nome, Nato a… il…, Codice fiscale, Residente, CAP, Comune, Prov., Email, Tel.). Dal codice fiscale ricava
-anche la data di nascita. I campi non riconosciuti restano **evidenziati in giallo** da completare a mano.
-Se il PDF è una scansione (immagine) il testo non è leggibile: i dati si inseriscono a mano e il file viene allegato comunque.
-Per adattarlo al vostro modulo reale modificare `FORM_FIELD_MAP` e `LABELS` nello stesso file.
+Il lettore (`src/lib/pdfParse.ts`) è tarato sul **«Modulo di iscrizione all'associazione APS Cori.TheProject»**.
+Legge: Cognome, Nome, Sesso, Data di nascita, Cittadinanza, Codice Fiscale, Luogo di nascita (con provincia),
+Identità alias, Indirizzo, CAP, Comune, email, cell., e il consenso all'uso di immagini/video (Acconsente / Non acconsente).
+
+- Funziona sia con PDF **compilabili** (legge i campi del modulo e le caselle spuntate) sia con PDF con **testo** compilato.
+- Dal codice fiscale ricava la data di nascita se manca.
+- L'email e il CF dell'intestazione (quelli dell'associazione) vengono ignorati.
+- I campi non riconosciuti restano **evidenziati in giallo** da completare a mano.
+- Se il PDF è una **scansione o una foto** (immagine) il testo non è leggibile: i dati si inseriscono a mano e il file viene allegato comunque.
+- La quota annuale predefinita è **20 €** (modificabile nella pagina Quote).
+
+Se cambiate il modulo, adattare `LAYOUT` (etichette) e `FORM_FIELD_MAP` (nomi dei campi) nello stesso file.
 
 ## Privacy
 

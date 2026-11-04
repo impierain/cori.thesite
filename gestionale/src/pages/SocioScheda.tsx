@@ -7,7 +7,7 @@ import type { Fee, Member } from '../lib/types'
 import { Field } from '../components/ui'
 
 type Form = Partial<Member>
-const TEXT_FIELDS: (keyof ParsedMember)[] = ['cognome', 'nome', 'codice_fiscale', 'luogo_nascita', 'indirizzo', 'cap', 'comune', 'provincia', 'email', 'telefono']
+const TEXT_FIELDS: (keyof ParsedMember)[] = ['cognome', 'nome', 'sesso', 'cittadinanza', 'codice_fiscale', 'luogo_nascita', 'indirizzo', 'cap', 'comune', 'provincia', 'email', 'telefono']
 
 export default function SocioScheda() {
   const { id } = useParams(); const isNew = id === 'nuovo'
@@ -37,7 +37,7 @@ export default function SocioScheda() {
     setPdf(file); setParseMsg('Leggo il modulo…'); setFound(null)
     try {
       const { data, found, hasText } = await parseModulo(file)
-      setV(p => ({ ...p, ...Object.fromEntries(Object.entries(data).filter(([, x]) => x)) }))
+      setV(p => ({ ...p, ...Object.fromEntries(Object.entries(data).filter(([, x]) => x !== undefined && x !== '')) }))
       setFound(found)
       setParseMsg(!hasText && found.length === 0
         ? 'Il PDF sembra una scansione (immagine): non riesco a leggere il testo. Compila i dati a mano; il file verrà comunque allegato.'
@@ -50,7 +50,7 @@ export default function SocioScheda() {
     e.preventDefault(); setBusy(true); setErr('')
     try {
       const payload = {
-        numero_tessera: v.numero_tessera || null, nome: v.nome, cognome: v.cognome, codice_fiscale: v.codice_fiscale || null,
+        numero_tessera: v.numero_tessera || null, nome: v.nome, cognome: v.cognome, sesso: v.sesso || null, cittadinanza: v.cittadinanza || null, identita_alias: !!v.identita_alias, consenso_immagini: v.consenso_immagini ?? null, codice_fiscale: v.codice_fiscale || null,
         data_nascita: v.data_nascita || null, luogo_nascita: v.luogo_nascita || null, indirizzo: v.indirizzo || null, cap: v.cap || null,
         comune: v.comune || null, provincia: v.provincia || null, email: v.email || null, telefono: v.telefono || null,
         data_iscrizione: v.data_iscrizione, stato: v.stato, data_cessazione: v.stato === 'cessato' ? (v.data_cessazione || today()) : null, note: v.note || null,
@@ -97,9 +97,11 @@ export default function SocioScheda() {
         <h2>Dati del socio</h2>
         <div className="fields">
           <Field label="N. tessera"><input type="number" value={v.numero_tessera ?? ''} onChange={e => set('numero_tessera', e.target.value ? Number(e.target.value) : null)} /></Field>
-          {TEXT_FIELDS.slice(0, 3).map(k => <Field key={k} label={FIELD_LABELS[k] + (k === 'cognome' || k === 'nome' ? ' *' : '')}><input className={hl(k)} required={k === 'cognome' || k === 'nome'} value={(v[k as keyof Member] as string) ?? ''} onChange={e => set(k as keyof Member, e.target.value as never)} /></Field>)}
+          {TEXT_FIELDS.slice(0, 5).map(k => <Field key={k} label={FIELD_LABELS[k] + (k === 'cognome' || k === 'nome' ? ' *' : '')}><input className={hl(k)} required={k === 'cognome' || k === 'nome'} value={(v[k as keyof Member] as string) ?? ''} onChange={e => set(k as keyof Member, e.target.value as never)} /></Field>)}
           <Field label="Data di nascita"><input type="date" className={hl('data_nascita')} value={v.data_nascita ?? ''} onChange={e => set('data_nascita', e.target.value)} /></Field>
-          {TEXT_FIELDS.slice(3).map(k => <Field key={k} label={FIELD_LABELS[k]}><input className={hl(k)} value={(v[k as keyof Member] as string) ?? ''} onChange={e => set(k as keyof Member, e.target.value as never)} /></Field>)}
+          {TEXT_FIELDS.slice(5).map(k => <Field key={k} label={FIELD_LABELS[k]}><input className={hl(k)} value={(v[k as keyof Member] as string) ?? ''} onChange={e => set(k as keyof Member, e.target.value as never)} /></Field>)}
+          <Field label="Identità alias"><select value={v.identita_alias ? 's' : 'n'} onChange={e => set('identita_alias', e.target.value === 's')}><option value="n">No</option><option value="s">Sì</option></select></Field>
+          <Field label="Consenso uso immagini/video"><select className={found && v.consenso_immagini == null ? 'hl' : ''} value={v.consenso_immagini == null ? '' : v.consenso_immagini ? 's' : 'n'} onChange={e => set('consenso_immagini', e.target.value === '' ? null : e.target.value === 's')}><option value="">Non indicato</option><option value="s">Acconsente</option><option value="n">Non acconsente</option></select></Field>
           <Field label="Data iscrizione"><input type="date" required value={v.data_iscrizione ?? ''} onChange={e => set('data_iscrizione', e.target.value)} /></Field>
           <Field label="Stato"><select value={v.stato} onChange={e => set('stato', e.target.value as Member['stato'])}><option value="attivo">Attivo</option><option value="sospeso">Sospeso</option><option value="cessato">Cessato</option></select></Field>
           {v.stato === 'cessato' && <Field label="Data cessazione"><input type="date" value={v.data_cessazione ?? ''} onChange={e => set('data_cessazione', e.target.value)} /></Field>}

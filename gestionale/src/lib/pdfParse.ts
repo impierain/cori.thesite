@@ -9,35 +9,42 @@ import workerUrl from 'pdfjs-dist/build/pdf.worker.min.mjs?url'
 pdfjs.GlobalWorkerOptions.workerSrc = workerUrl
 
 export interface ParsedMember {
-  nome?: string; cognome?: string; codice_fiscale?: string; data_nascita?: string; luogo_nascita?: string
+  nome?: string; cognome?: string; sesso?: string; cittadinanza?: string
+  codice_fiscale?: string; data_nascita?: string; luogo_nascita?: string
   indirizzo?: string; cap?: string; comune?: string; provincia?: string
   email?: string; telefono?: string; data_iscrizione?: string
+  identita_alias?: boolean; consenso_immagini?: boolean
 }
 
 export const FIELD_LABELS: Record<keyof ParsedMember, string> = {
-  cognome: 'Cognome', nome: 'Nome', codice_fiscale: 'Codice fiscale', data_nascita: 'Data di nascita',
-  luogo_nascita: 'Luogo di nascita', indirizzo: 'Indirizzo', cap: 'CAP', comune: 'Comune',
-  provincia: 'Provincia', email: 'Email', telefono: 'Telefono', data_iscrizione: 'Data iscrizione',
+  cognome: 'Cognome', nome: 'Nome', sesso: 'Sesso', cittadinanza: 'Cittadinanza', codice_fiscale: 'Codice fiscale',
+  data_nascita: 'Data di nascita', luogo_nascita: 'Luogo di nascita', indirizzo: 'Indirizzo', cap: 'CAP',
+  comune: 'Comune', provincia: 'Provincia', email: 'Email', telefono: 'Cellulare', data_iscrizione: 'Data iscrizione',
+  identita_alias: 'Identità alias', consenso_immagini: 'Consenso immagini',
 }
 
-// ---- Nomi dei campi nei PDF compilabili (adatta qui se il modulo usa nomi particolari) ----
+// Email dell'associazione stampata nell'intestazione del modulo: da non scambiare per quella del socio.
+const IGNORED_EMAILS = ['cori.theproject@gmail.com']
+
+// ---- Nomi dei campi nei PDF compilabili (adatta qui se i nomi del modulo sono particolari) ----
 const FORM_FIELD_MAP: [keyof ParsedMember, RegExp][] = [
   ['cognome', /cognome/i],
-  ['nome', /^nome$|^nome[_\s-]?(socio)?$|\bnome\b/i],
-  ['codice_fiscale', /codice.?fiscale|^cf$|c\.?f\.?$/i],
-  ['data_nascita', /data.?(di)?.?nascita|nato.?il|nascita.?data/i],
-  ['luogo_nascita', /luogo.?(di)?.?nascita|nato.?a/i],
-  ['indirizzo', /indirizzo|via|residenza/i],
+  ['nome', /\bnome\b/i],
+  ['sesso', /sesso|genere/i],
+  ['cittadinanza', /cittadinanza|nazionalit/i],
+  ['codice_fiscale', /codice.?fiscale|^cf$/i],
+  ['data_nascita', /data.?(di)?.?nascita|nato.?il/i],
+  ['luogo_nascita', /luogo.?(di)?.?nascita|nato.?a\b/i],
+  ['indirizzo', /indirizzo|residenza/i],
   ['cap', /\bcap\b/i],
-  ['comune', /comune|citt[aà]/i],
+  ['comune', /comune|citt[aà]\b/i],
   ['provincia', /provincia|\bprov\b/i],
   ['email', /e-?mail|posta/i],
-  ['telefono', /telefono|cellulare|\btel\b|cell/i],
-  ['data_iscrizione', /data.?(di)?.?(iscrizione|adesione|domanda)/i],
+  ['telefono', /telefono|cellulare|\bcell\b|\btel\b/i],
 ]
 
 const CF_RE = /\b[A-Z]{6}\d{2}[A-EHLMPR-T]\d{2}[A-Z]\d{3}[A-Z]\b/i
-const EMAIL_RE = /[\w.+-]+@[\w-]+(?:\.[\w-]+)+/
+const EMAIL_RE = /[\w.+-]+@[\w-]+(?:\.[\w-]+)+/g
 const DATE_RE = /(\d{1,2})[\/.\-](\d{1,2})[\/.\-](\d{4}|\d{2})/
 
 export function toISODate(s: string): string | undefined {
@@ -60,21 +67,40 @@ function birthFromCF(cf: string): string | undefined {
   return `${year}-${String(mi + 1).padStart(2, '0')}-${String(dd).padStart(2, '0')}`
 }
 
-const LABELS = ['cognome', 'nome', 'nato a', 'nata a', 'nato/a a', 'luogo di nascita', 'il', 'data di nascita',
-  'codice fiscale', 'c.f.', 'residente', 'indirizzo', 'via', 'cap', 'comune', 'città', 'prov', 'provincia',
-  'email', 'e-mail', 'telefono', 'cellulare', 'tel', 'cell']
+// Etichette del modulo "Modulo di iscrizione APS Cori.TheProject", nell'ordine in cui compaiono.
+// Il valore di ogni campo è il testo tra la sua etichetta e quella successiva.
+const LAYOUT: [string, RegExp][] = [
+  ['cognome', /cognome\s*\*?/i],
+  ['nome', /\bnome\s*\*?/i],
+  ['sesso', /\bsesso\s*\*?/i],
+  ['data_nascita', /data\s+di\s+nascita\s*\*?/i],
+  ['cittadinanza', /cittadinanza\s*\*?/i],
+  ['codice_fiscale', /codice\s+fiscale\s*\*?/i],
+  ['luogo_nascita', /luogo\s+di\s+nascita\s*\*?/i],
+  ['_alias', /identit[àa]?['’]?\s*alias/i],
+  ['indirizzo', /indirizzo\s*\*?/i],
+  ['cap', /\bcap\b\s*\*?/i],
+  ['comune', /\bcomune\b\s*\*?/i],
+  ['email', /\be-?mail\b\s*\*?/i],
+  ['telefono', /\b(?:cell(?:ulare)?|tel(?:efono)?)\b\.?\s*\*?/i],
+]
 
-/** Valore che segue `label` fino alla prossima etichetta nota o a fine riga. */
-function after(text: string, labels: string[]): string | undefined {
-  const stop = LABELS.map(l => l.replace(/[.*+?^${}()|[\]\\\/]/g, '\\$&')).join('|')
-  for (const l of labels) {
-    const esc = l.replace(/[.*+?^${}()|[\]\\\/]/g, '\\$&')
-    const re = new RegExp(`(?:^|[\\s,;(])${esc}\\s*[:\\-–]?\\s*(?:_{2,}|\\.{2,})?\\s*([^\\n]*?)\\s*(?=(?:[\\s,;(](?:${stop})\\b\\s*[:\\-–.)])|\\n|$)`, 'i')
-    const m = text.match(re)
-    const v = m?.[1]?.replace(/[_.]{2,}/g, '').trim()
-    if (v && v.length > 0 && v.length < 80) return v
+const clean = (v: string) => v.replace(/[_*]+|\.{3,}/g, ' ').replace(/\(\s*\)/g, ' ').replace(/^[\s:;,\-–]+/, '').replace(/\s+/g, ' ').trim()
+
+function sliceByLabels(text: string): Record<string, string> {
+  const end = text.search(/\bCHIEDE\b/i)
+  let region = end > 0 ? text.slice(0, end) : text
+  const start = region.search(/sottoscritt/i)
+  if (start > 0) region = region.slice(start)
+  const hits: { key: string; from: number; to: number }[] = []
+  for (const [key, re] of LAYOUT) {
+    const m = re.exec(region)
+    if (m) hits.push({ key, from: m.index, to: m.index + m[0].length })
   }
-  return undefined
+  hits.sort((a, b) => a.from - b.from)
+  const out: Record<string, string> = {}
+  hits.forEach((h, i) => { out[h.key] = clean(region.slice(h.to, hits[i + 1]?.from ?? region.length)) })
+  return out
 }
 
 export async function parseModulo(file: File): Promise<{ data: ParsedMember; found: (keyof ParsedMember)[]; hasText: boolean }> {
@@ -86,16 +112,25 @@ export async function parseModulo(file: File): Promise<{ data: ParsedMember; fou
   for (let p = 1; p <= pdf.numPages; p++) {
     const page = await pdf.getPage(p)
 
-    // 1) campi compilabili
-    const annots = await page.getAnnotations()
-    for (const a of annots) {
-      const name = String(a.fieldName ?? ''); const val = String(a.fieldValue ?? '').trim()
-      if (!name || !val || val === 'Off') continue
+    // 1) campi compilabili del PDF (se presenti)
+    for (const a of await page.getAnnotations()) {
+      const name = String(a.fieldName ?? '')
+      if (!name) continue
+      if (a.checkBox || a.radioButton) {
+        const on = a.fieldValue && String(a.fieldValue) !== 'Off' || a.buttonValue && a.fieldValue === a.buttonValue
+        if (!on) continue
+        if (/alias/i.test(name)) data.identita_alias = true
+        else if (/non.?acconsente|no.?consenso/i.test(name)) data.consenso_immagini = false
+        else if (/acconsente|consenso/i.test(name)) data.consenso_immagini = true
+        continue
+      }
+      const val = String(a.fieldValue ?? '').trim()
+      if (!val) continue
       const hit = FORM_FIELD_MAP.find(([, re]) => re.test(name))
-      if (hit && !data[hit[0]]) data[hit[0]] = val
+      if (hit && !data[hit[0]]) (data as Record<string, unknown>)[hit[0]] = val
     }
 
-    // 2) testo, ricostruito riga per riga
+    // 2) testo della pagina, ricostruito riga per riga
     const content = await page.getTextContent()
     let lastY: number | null = null
     for (const it of content.items as { str: string; transform: number[] }[]) {
@@ -110,30 +145,38 @@ export async function parseModulo(file: File): Promise<{ data: ParsedMember; fou
 
   const t = text.replace(/[ \t]+/g, ' ')
   const hasText = t.replace(/\s/g, '').length > 30
+  const set = (k: keyof ParsedMember, v: string | undefined) => { if (v && !data[k]) (data as Record<string, unknown>)[k] = v }
 
-  const set = <K extends keyof ParsedMember>(k: K, v: ParsedMember[K] | undefined) => { if (v && !data[k]) data[k] = v }
+  // 3) etichette del modulo
+  const f = sliceByLabels(t)
+  set('cognome', f.cognome); set('nome', f.nome); set('sesso', f.sesso); set('cittadinanza', f.cittadinanza)
+  set('codice_fiscale', f.codice_fiscale); set('data_nascita', f.data_nascita)
+  set('luogo_nascita', f.luogo_nascita); set('indirizzo', f.indirizzo); set('cap', f.cap); set('comune', f.comune)
+  set('email', f.email); set('telefono', f.telefono)
 
-  set('codice_fiscale', t.match(CF_RE)?.[0].toUpperCase())
-  set('email', t.match(EMAIL_RE)?.[0].toLowerCase())
-  set('cognome', after(t, ['cognome']))
-  set('nome', after(t, ['nome']))
-  set('luogo_nascita', after(t, ['nato/a a', 'nato a', 'nata a', 'luogo di nascita']))
-  const dn = after(t, ['data di nascita', 'nato/a il', 'nato il', 'nata il', 'il'])
-  if (dn) set('data_nascita', toISODate(dn))
-  set('indirizzo', after(t, ['indirizzo', 'residente in', 'residente a', 'via']))
-  set('cap', t.match(/\b(?:cap\s*[:.]?\s*)?(\d{5})\b/i)?.[1])
-  set('comune', after(t, ['comune', 'città']))
-  set('provincia', after(t, ['provincia', 'prov'])?.replace(/[()]/g, '').slice(0, 2).toUpperCase())
-  set('telefono', t.match(/(?:tel(?:efono)?|cell(?:ulare)?)\.?\s*[:\-]?\s*(\+?\d[\d\s./-]{6,14}\d)/i)?.[1]?.trim())
+  // 4) ripieghi sul testo intero
+  set('codice_fiscale', t.match(CF_RE)?.[0])
+  if (!data.email) data.email = (t.match(EMAIL_RE) ?? []).map(e => e.toLowerCase()).find(e => !IGNORED_EMAILS.includes(e))
 
   // normalizzazioni
-  if (data.luogo_nascita) data.luogo_nascita = data.luogo_nascita.replace(/\s+il\s+\d.*$/i, '').replace(/\s*\(\w{2}\)\s*$/, '').trim()
-  if (data.indirizzo) data.indirizzo = data.indirizzo.replace(/\s+(cap|c\.a\.p\.|comune|città)\b.*$/i, '').trim()
-  if (data.codice_fiscale) data.codice_fiscale = data.codice_fiscale.toUpperCase().replace(/\s/g, '')
+  if (data.codice_fiscale) {
+    const cf = data.codice_fiscale.toUpperCase().replace(/\s/g, '')
+    data.codice_fiscale = CF_RE.test(cf) ? cf : (data.codice_fiscale = cf)
+  }
+  if (data.email) { data.email = data.email.replace(/\s/g, '').toLowerCase(); if (IGNORED_EMAILS.includes(data.email)) delete data.email }
+  if (data.cap) data.cap = data.cap.replace(/\D/g, '').slice(0, 5) || undefined
+  if (data.telefono) data.telefono = data.telefono.replace(/[^\d+\s]/g, '').trim() || undefined
+  if (data.sesso) data.sesso = data.sesso.slice(0, 20)
   if (data.data_nascita && !/^\d{4}-/.test(data.data_nascita)) data.data_nascita = toISODate(data.data_nascita)
   if (!data.data_nascita && data.codice_fiscale && CF_RE.test(data.codice_fiscale)) data.data_nascita = birthFromCF(data.codice_fiscale)
   if (data.data_iscrizione) data.data_iscrizione = toISODate(data.data_iscrizione)
+  // "( AG )" accanto all'indirizzo = provincia di residenza
+  if (data.indirizzo) {
+    const pv = data.indirizzo.match(/\(\s*([A-Za-z]{2})\s*\)/)
+    if (pv) { if (!data.provincia) data.provincia = pv[1].toUpperCase(); data.indirizzo = data.indirizzo.replace(pv[0], '').replace(/\s+/g, ' ').trim() }
+  }
+  for (const k of Object.keys(data) as (keyof ParsedMember)[]) if (data[k] === undefined || data[k] === '') delete data[k]
 
-  const found = (Object.keys(data) as (keyof ParsedMember)[]).filter(k => data[k])
+  const found = Object.keys(data) as (keyof ParsedMember)[]
   return { data, found, hasText }
 }

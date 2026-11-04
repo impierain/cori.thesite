@@ -30,6 +30,10 @@ export interface Member {
   numero_tessera: number | null
   nome: string
   cognome: string
+  sesso: string | null
+  cittadinanza: string | null
+  identita_alias: boolean
+  consenso_immagini: boolean | null
   codice_fiscale: string | null
   data_nascita: string | null
   luogo_nascita: string | null

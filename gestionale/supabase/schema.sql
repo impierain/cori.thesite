@@ -25,6 +25,10 @@ create table if not exists public.members (
   numero_tessera integer,
   nome text not null,
   cognome text not null,
+  sesso text,
+  cittadinanza text,
+  identita_alias boolean not null default false,   -- dal modulo: "Identità alias"
+  consenso_immagini boolean,                       -- dal modulo: acconsente / non acconsente (null = non indicato)
   codice_fiscale text,
   data_nascita date,
   luogo_nascita text,

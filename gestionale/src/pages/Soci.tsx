@@ -21,8 +21,8 @@ export default function Soci() {
   ), [rows, q, stato])
 
   const exportCSV = () => downloadCSV('libro-soci.csv', [
-    ['N. tessera', 'Cognome', 'Nome', 'Codice fiscale', 'Data nascita', 'Luogo nascita', 'Indirizzo', 'CAP', 'Comune', 'Prov.', 'Email', 'Telefono', 'Data iscrizione', 'Stato', 'Data cessazione'],
-    ...list.map(m => [m.numero_tessera, m.cognome, m.nome, m.codice_fiscale, m.data_nascita, m.luogo_nascita, m.indirizzo, m.cap, m.comune, m.provincia, m.email, m.telefono, m.data_iscrizione, m.stato, m.data_cessazione]),
+    ['N. tessera', 'Cognome', 'Nome', 'Sesso', 'Cittadinanza', 'Codice fiscale', 'Data nascita', 'Luogo nascita', 'Indirizzo', 'CAP', 'Comune', 'Prov.', 'Email', 'Telefono', 'Data iscrizione', 'Stato', 'Data cessazione'],
+    ...list.map(m => [m.numero_tessera, m.cognome, m.nome, m.sesso, m.cittadinanza, m.codice_fiscale, m.data_nascita, m.luogo_nascita, m.indirizzo, m.cap, m.comune, m.provincia, m.email, m.telefono, m.data_iscrizione, m.stato, m.data_cessazione]),
   ])
 
   return (

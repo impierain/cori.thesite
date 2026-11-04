@@ -4,7 +4,7 @@ import { dateIT, eur, today } from '../lib/format'
 import type { Fee, Member } from '../lib/types'
 import { Field, Kpi, Modal, YearSelect } from '../components/ui'
 
-const getDefault = () => { try { return Number(localStorage.getItem('quotaDefault') ?? '10') } catch { return 10 } }
+const getDefault = () => { try { return Number(localStorage.getItem('quotaDefault') ?? '20') } catch { return 20 } }
 
 export default function Quote() {
   const [anno, setAnno] = useState(new Date().getFullYear())
