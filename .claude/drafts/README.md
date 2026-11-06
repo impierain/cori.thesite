@@ -7,22 +7,42 @@ Regole in vigore: modulo online NON pubblicato (solo segnaposto [LINK MODULO –
 |---|---|---|
 | `piano-comunicazione-consulta.md` | Piano 6 settimane, canali, fasi, domande aperte | Bozza 2, da approvare |
 | `calendario-editoriale-instagram.md` | 4 formati ripetibili, calendario S1-S6, caption post singoli, testi Story | Bozza, date [DA CONFERMARE] |
-| `caroselli-consulta.md` | v3: 4 caroselli da 5 slide (cos'è e a cosa serve; perché ce n'è bisogno; il percorso; E se a Cammarata…?) + 5° "Come aderire" FERMO. Canale: sito e profili del Comune. Include lista "Cosa va chiesto al Comune" | Bozza v3 DA APPROVARE (humanizer applicato); solo testi, design da rifare dopo l'ok |
+| `caroselli-consulta.md` | v3: 4 caroselli da 5 slide (cos'è e a cosa serve; perché ce n'è bisogno; il percorso; E se a Cammarata…?) + 5° "Come aderire" FERMO. Canale: sito e profili del Comune. Include lista "Cosa va chiesto al Comune" | Bozza v3 DA APPROVARE (humanizer applicato); solo testi, design v3 fatti su Canva (5 pagine ciascuno), da verificare e approvare |
 | `tessera-volantino.md` | Tessera fronte/retro e volantino scuole | Bozza; non stampare (mancano privacy, QR, permessi scuole) |
 | `comunicato-sito-caption.md` | Comunicato stampa, testo sito del Comune, caption apertura modulo, caption serata | DA APPROVARE (cita Comune/Assessorato) |
 | `assets/logo-cgc-provvisorio.png` | Logo provvisorio, sfondo trasparente | Provvisorio |
 
-## Grafiche Canva (bozze v2, DA RIFARE)
-Piero ha approvato lo stile ma ha chiesto meno slide e testi riscritti (caroselli v3, 5 slide ciascuno). I design Canva qui sotto riflettono i testi v2 (7-8 pagine, con riferimenti all'Instagram della Consulta) e sono SUPERATI: non usarli. Si rifanno dopo l'approvazione dei testi v3, con il logo del Comune (autorizzato) al posto del logo provvisorio, su sfondo crema o #14301F. Non rifatti in questa fase.
+## Grafiche Canva v3 (2026-11-06, 5 pagine ciascuna, 1080x1350, DA APPROVARE)
+Rifatte sui testi v3, stesso stile e filo del puzzle delle v2. Sono design NUOVI: i v2 e gli altri file dell'account ("Consulta Giovanile di Cammarata", "Logo CGC") non sono stati toccati.
 
-| Design v2 | Link Canva (modifica) | Stato |
+| Design v3 | Link Canva (modifica) | Stato |
 |---|---|---|
-| 1 Cos'è la Consulta | https://www.canva.com/design/DAHaID3rqmk/edit | Superato; stile di riferimento |
+| 1 CGC – Carosello 1 v3 – Cos'è e a cosa serve | https://www.canva.com/d/L2BfwJX8Z5VZZre | Bozza, DA APPROVARE |
+| 2 CGC – Carosello 2 v3 – Perché ce n'è bisogno | https://www.canva.com/d/ISE4NIdaEHyO21J | Bozza; i segnaposto [DATO ANAGRAFE…] restano finché il Comune non dà i dati |
+| 3 CGC – Carosello 3 v3 – Il percorso | https://www.canva.com/d/Z2E3b3GJE7LxrMp | Bozza, DA APPROVARE |
+| 4 CGC – Carosello 4 v3 – E se a Cammarata | https://www.canva.com/d/IX6JQ5qYCQ92_2p | Bozza; [CANALE RISPOSTE – DA DEFINIRE] |
+| 5 CGC – Carosello 5 v3 – Come aderire (NON PUBBLICARE) | https://www.canva.com/d/hRZWHKeHPYlaB-k | FERMO: non usare finché modulo, informativa e protocollo non sono pronti |
+
+### Grafiche v2 (SUPERATE, non usare)
+| Design v2 | Link | Stato |
+|---|---|---|
+| 1 Cos'è la Consulta | https://www.canva.com/design/DAHaID3rqmk/edit | Superato |
 | 2 Cosa fa | https://www.canva.com/design/DAHaIGY-Ozk/edit | Superato |
 | 3 E se a Cammarata…? | https://www.canva.com/design/DAHaIE4pHvg/edit | Superato |
 | 4 Perché è importante | https://www.canva.com/design/DAHaIAiYKsA/edit | Superato |
 
-Nota sui colori (da ricordare nel rifacimento): Canva aveva generato tinte vicine ma non identiche alla palette (es. #16301d invece di #14301F, #fbcd39 invece di #FFC93C). Impostare i codici esatti dal pannello colori. Le etichette "DA APPROVARE" restano solo nelle bozze.
+### Logo: cosa fare a mano
+Il logo non si può caricare da qui. Nei v3 ci sono due riquadri tratteggiati "LOGO CGC" e "LOGO COMUNE", sempre su sfondo #14301F o crema (mai sul verde #2F7D4A).
+1. Logo del Comune (autorizzato): caricare il file dal Comune in Canva (Carica file), trascinarlo sul riquadro "LOGO COMUNE", poi cancellare il riquadro tratteggiato e la scritta. Verificare con il Comune dimensioni e spazi di rispetto.
+2. Logo CGC: usare `assets/logo-cgc-provvisorio.png` (sfondo trasparente) su sfondo scuro, oppure `assets/logo-cgc-v2-sfondo-bianco.png` su sfondo crema. Stessa procedura. Il logo provvisorio resta provvisorio finché non c'è l'ok.
+3. Pagine con i riquadri: caroselli 1, 2, 4, 5 pagine 1 e 5; carosello 3 pagine 1, 2 e 5.
+4. Prima di esportare: cancellare l'etichetta "BOZZA – DA APPROVARE" da ogni pagina (e "NON PUBBLICARE" nel carosello 5, solo quando sarà utilizzabile).
+
+### Pulizia nell'account Canva (da fare a mano, io non cancello)
+La generazione ha creato anche copie intermedie a 1080x1440 (formato sbagliato), da eliminare: DAHaIccuuU8, DAHaIRwaqio, DAHaIYeyOBE, DAHaIZ4ysUQ, DAHaIU7zPTQ (titoli "CGC – Carosello … v3" o "Carosello Instagram …", 1080x1440). C'è anche un design senza titolo, 1 pagina, DAHaITC9Bm8, comparso mentre lavoravo: origine non verificata, controllare prima di cancellarlo.
+
+### Colori: stato della verifica
+Canva produce tinte vicine ma non identiche (sfondi e tessere puzzle sono immagini, non ricolorabili da qui; sfondo crema misurato ~#fbf8eb invece di #FBF7EF). Corretti ai codici esatti i colori dei testi del carosello 1 (tutte le pagine), 2 (pagine 4 e 5) e 5 (pagine 1, 2 e 4). Restano a tinte approssimate: sfondi, tessere, barrette gialle e pillole del contatore in tutti i design, e i testi dei caroselli 2 (pagine 1-3), 3, 4 e 5 (pagine 3 e 5). In Canva: seleziona il testo, apri il pannello colori e digita il codice esatto.
 
 ## Altri design già presenti nell'account Canva
 Nell'account c'erano già altri file (per esempio "Consulta Giovanile di Cammarata", "Logo CGC"). Non li ho aperti né modificati.
