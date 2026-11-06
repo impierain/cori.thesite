@@ -1,6 +1,13 @@
 # Piano di comunicazione – Consulta Giovanile di Cammarata
-**BOZZA 1 per Piero – non pubblicabile. Nessun contenuto qui è stato approvato.**
+**BOZZA 2 per Piero (aggiornata 2026-11-06) – non pubblicabile. Nessun contenuto qui è stato approvato.**
 Parti che citano Comune, Assessorato o Consiglio: **DA APPROVARE**.
+
+## Aggiornamento v2: versione a breve termine, in preparazione agli eventi
+- Piero ha dato il via alla campagna completa. Il piano resta di 6 settimane; in pratica S1-S2 sono il lavoro di preparazione e annuncio, S3-S4 idee e scuole, S5-S6 serata ed eventi.
+- Cosa è pronto in bozza (vedi README.md): calendario editoriale, 4 caroselli (testi e bozze Canva), tessera, volantino, comunicato, testo sito, caption modulo e serata.
+- Tutte le date restano [DA CONFERMARE]. Nessuna data di approvazione del Regolamento viene annunciata.
+- Le domande 1, 2, 4 e 5 qui sotto restano aperte e bloccano: pubblicazione del modulo online (privacy), stampa e distribuzione delle tessere (scuole, QR), invio di comunicato e testo sito (Comune).
+- Il modulo online resta non pubblicato. Fino a conferma: DM e cartaceo, segnaposto [LINK MODULO – DA PUBBLICARE].
 
 ## Domande aperte (max 5)
 1. **[BLOCCANTE per caption e comunicato]** Serata di presentazione: data, ora e spazio comunale? Finora tutto è [DA CONFERMARE].
